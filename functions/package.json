@@ -1,0 +1,13 @@
+{
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "dependencies": {
+    "clusters": "^0.0.4",
+    "firebase-admin": "~4.2.1",
+    "firebase-functions": "^0.5.9",
+    "geolib": "^2.0.23",
+    "lodash": "^4.17.4",
+    "mathjs": "^3.14.2"
+  },
+  "private": true
+}

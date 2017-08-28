@@ -9,5 +9,10 @@
     "lodash": "^4.17.4",
     "mathjs": "^3.14.2"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.3.2",
+    "eslint-plugin-import": "^2.7.0"
+  }
 }

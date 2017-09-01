@@ -1,0 +1,22 @@
+{
+  "name": "ajenganBaliFunction",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/puguhsudarma/ajengan-bali-function.git",
+  "author": "Reroet <wayanpuguhsudarma@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "rimraf": "^2.6.1"
+  },
+  "scripts": {
+    "prepackage-functions": "rimraf functions",
+    "package-functions": "babel 'functionsES6' --out-dir 'functions' --copy-files --ignore 'node_modules'",
+    "postpackage-functions": "cd functions && yarn",
+    "deploy": "yarn run package-functions && firebase deploy",
+    "serve": "yarn run package-functions && sudo firebase serve --only functions"
+  }
+}

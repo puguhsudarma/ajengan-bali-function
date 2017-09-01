@@ -1,7 +1,5 @@
 import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
-
-const firebase = admin.initializeApp(functions.config().firebase);
+import firebase from './firebaseAdmin';
 
 export const createRatingNewUser = functions.auth.user().onCreate((user) => {
   const data = { [user.data.uid]: { rating: -1, review: '' } };

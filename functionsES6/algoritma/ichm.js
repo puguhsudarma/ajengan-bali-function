@@ -156,17 +156,15 @@ const weightedSum = (ratingItem, linearSim) => {
   return coldStart;
 };
 
-const ichm = (ratingItem, contentItem, k = 4, iterate = 200) => {
-  const groupRatingItem = groupRating(k, contentItem, iterate);
+module.exports = (ratingItem, contentItem, config = { k: 4, iterate: 200, coefisien: 0.4 }) => {
+  const lc = linearCombination(
+    pearsonCorrelationBasedSimilarity(ratingItem),
+    adjustCosineSimilarity(groupRating(config.k, contentItem, config.iterate)),
+    config.coefisien
+  );
 
-  const adjustSim = adjustCosineSimilarity(groupRatingItem);
-  const pearsonSim = pearsonCorrelationBasedSimilarity(ratingItem);
-
-  const lc = linearCombination(pearsonSim, adjustSim);
-
-  const nonColdStart = weightedAverageDeviation(ratingItem, lc);
-  const coldStart = weightedSum(ratingItem, lc);
-
-  return { nonColdStart, coldStart };
+  return {
+    nonColdStart: weightedAverageDeviation(ratingItem, lc),
+    coldStart: weightedSum(ratingItem, lc),
+  };
 };
-module.exports = ichm;

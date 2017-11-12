@@ -160,7 +160,7 @@ module.exports = (ratingItem, contentItem, config = { k: 4, iterate: 200, coefis
   const lc = linearCombination(
     pearsonCorrelationBasedSimilarity(ratingItem),
     adjustCosineSimilarity(groupRating(config.k, contentItem, config.iterate)),
-    config.coefisien
+    config.coefisien,
   );
 
   return {

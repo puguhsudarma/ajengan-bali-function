@@ -55,4 +55,4 @@ fastlane/screenshots
 .runtimeconfig.json
 
 # other
-functions/
+firebase-debug.log

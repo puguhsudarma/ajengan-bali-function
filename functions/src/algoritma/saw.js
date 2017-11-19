@@ -1,4 +1,4 @@
-const math = require('mathjs');
+import math from 'mathjs';
 
 const normalisasi = (matriks, flag) => {
   const max = math.max(matriks, 0);
@@ -29,4 +29,4 @@ const preferensi = (normalMatriks, bobot) => {
   return pref;
 };
 
-module.exports = (matriks, flag, bobot) => preferensi(normalisasi(matriks, flag), bobot);
+export default (matriks, flag, bobot) => preferensi(normalisasi(matriks, flag), bobot);

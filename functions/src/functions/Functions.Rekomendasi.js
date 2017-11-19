@@ -1,8 +1,8 @@
 import { https } from 'firebase-functions';
-import { sortBy } from 'lodash';
+import { orderBy } from 'lodash';
 import { transpose } from 'mathjs';
+import { getDistance } from 'geolib';
 import firebase from '../config/firebaseAdmin';
-import getDistance from '../config/distance';
 import algoritma from '../algoritma';
 
 /**
@@ -30,23 +30,30 @@ export const rekomendasiWarung = https.onRequest((request, response) => {
   // return promise to execute until terminate
   return Promise.all([snapshotKonten, snapshotRating])
     .then((deltaSnapshot) => {
-      // konten item warung
+      /**
+       * (1). Konten item warung
+       */
       deltaSnapshot[0].forEach((snapChild) => {
         const data = snapChild.val();
         const { key } = snapChild;
-        const km = getDistance(userCoord.lat, userCoord.lng, data.lat, data.lng);
+        const km = getDistance(
+          { latitude: parseFloat(userCoord.lat), longitude: parseFloat(userCoord.lng) },
+          { latitude: parseFloat(data.lat), longitude: parseFloat(data.lng) },
+        );
         kontenItem.push([
           km,
           data.totalRating,
         ]);
         item.push({
-          key,
-          km,
           ...data,
+          key,
+          km: parseFloat((km / 1000).toFixed(2)),
         });
       });
 
-      // rating warung
+      /**
+       * (2). Rating item warung
+       */
       deltaSnapshot[1].forEach((snapChildItem) => {
         const rowRating = [];
         snapChildItem.forEach((snapChildUser) => {
@@ -69,7 +76,9 @@ export const rekomendasiWarung = https.onRequest((request, response) => {
       });
       const transposeRating = transpose(rating);
 
-      // algoritma
+      /**
+       * (3). Algoritma
+       */
       const hasil = algoritma(transposeRating, kontenItem, countIndexUID);
       item.forEach((row, index) => {
         item[index] = {
@@ -78,10 +87,12 @@ export const rekomendasiWarung = https.onRequest((request, response) => {
         };
       });
 
-      // result
-      sortBy(item, 'nilaiRekomendasi');
-      console.log(item);
-      response.status(200).send(item);
+      /**
+       * (4). Result
+       */
+      const result = orderBy(item, ['nilaiRekomendasi'], ['desc']);
+      console.log(result);
+      response.status(200).send(result);
     })
     .catch((err) => {
       // error
@@ -115,17 +126,17 @@ export const rekomendasiMakanan = https.onRequest((request, response) => {
   // return promise to execute until terminate
   return Promise.all([snapshotKonten, snapshotRating, snapshotWarung])
     .then((deltaSnapshot) => {
-      // konten item makanan
+      /**
+       * (1). Konten item makanan
+       */
       const dataWarung = deltaSnapshot[2].val();
       deltaSnapshot[0].forEach((snapChild) => {
         const data = snapChild.val();
         const selectedWarung = dataWarung[data.warungId];
         const { key } = snapChild;
         const km = getDistance(
-          userCoord.lat,
-          userCoord.lng,
-          selectedWarung.lat,
-          selectedWarung.lng,
+          { latitude: parseFloat(userCoord.lat), longitude: parseFloat(userCoord.lng) },
+          { latitude: parseFloat(selectedWarung.lat), longitude: parseFloat(selectedWarung.lng) },
         );
         kontenItem.push([
           km,
@@ -133,14 +144,16 @@ export const rekomendasiMakanan = https.onRequest((request, response) => {
           data.totalRating,
         ]);
         item.push({
-          key,
-          km,
           ...data,
+          key,
+          km: parseFloat((km / 1000).toFixed(2)),
           warung: { ...selectedWarung },
         });
       });
 
-      // rating makanan
+      /**
+       * (2). Rating item makanan
+       */
       deltaSnapshot[1].forEach((snapChildItem) => {
         const rowRating = [];
         snapChildItem.forEach((snapChildUser) => {
@@ -163,7 +176,9 @@ export const rekomendasiMakanan = https.onRequest((request, response) => {
       });
       const transposeRating = transpose(rating);
 
-      // algoritma
+      /**
+       * (3). Algoritma
+       */
       const hasil = algoritma(transposeRating, kontenItem, countIndexUID);
       item.forEach((row, index) => {
         item[index] = {
@@ -172,10 +187,12 @@ export const rekomendasiMakanan = https.onRequest((request, response) => {
         };
       });
 
-      // result
-      sortBy(item, 'nilaiRekomendasi');
-      console.log(item);
-      response.status(200).send(item);
+      /**
+       * (4). Result
+       */
+      const result = orderBy(item, ['nilaiRekomendasi'], ['desc']);
+      console.log(result);
+      response.status(200).send(result);
     })
     .catch((err) => {
       console.log('Rekomendasi makanan error: ', err);

@@ -1,8 +1,8 @@
-// const slopeone = require('./slopeone');
-const ichm = require('./ichm');
-const saw = require('./saw');
+import slopeone from './slopeone';
+import ichm from './ichm';
+import saw from './saw';
 
-module.exports = (
+export default (
   rating,
   content,
   indexUser,
@@ -12,11 +12,11 @@ module.exports = (
   config = { k: 4, iterate: 200, coefisien: 0.4 },
 ) => {
   // Algoritma Slope One
-  // const slopeOne = slopeone(rating);
+  const slopeOne = slopeone(rating);
   // console.log(slopeOne);
 
   // Algoritma ICHM
-  const ichmVal = ichm(rating, content, config);
+  const ichmVal = ichm(slopeOne, content, indexUser, config);
   // console.log(ichmVal);
 
   // Algoritma SAW
@@ -33,7 +33,7 @@ module.exports = (
 
   const coldStart = [];
   content.forEach((rowVal, rowIndex) => {
-    coldStart.push([rowVal[indexJarak], ichmVal.coldStart[indexUser][rowIndex]]);
+    coldStart.push([rowVal[indexJarak], ichmVal[rowIndex]]);
   });
   const sawResult = saw(coldStart, flag, bobot);
 

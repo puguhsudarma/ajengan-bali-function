@@ -102,25 +102,28 @@ export const createRatingMakananNew = database.ref('makanan/{idMakanan}').onCrea
 /**
  * Menghitung rata - rata rating warung saat ada rating baru masuk
  */
-export const avgRatingWarung = database.ref('rating/warung/{idWarung}').onUpdate((event) => {
+export const avgRatingWarung = database.ref('rating/warung/{idWarung}/{uid}/rating').onUpdate((event) => {
   const { idWarung } = event.params;
-  const deltaSnapshot = event.data;
   const initRating = -1;
   let sum = 0;
   let count = 0;
 
-  deltaSnapshot.forEach((childSnapshot) => {
-    const childData = childSnapshot.val();
-    if (childData.rating > initRating) {
-      sum += childData.rating;
-      count += 1;
-    }
-  });
-  const avg = sum / count;
+  return firebase.database().ref(`rating/warung/${idWarung}`).once('value')
+    .then((deltaSnapshot) => {
+      deltaSnapshot.forEach((childSnapshot) => {
+        const childData = childSnapshot.val();
+        if (childData.rating > initRating) {
+          sum += childData.rating;
+          count += 1;
+        }
+      });
+      const avg = sum / count;
+      const update = firebase.database().ref(`warung/${idWarung}`).update({ totalRating: avg });
 
-  return firebase.database().ref(`warung/${idWarung}`).update({ totalRating: avg })
-    .then(() => {
-      console.log(`new avg rating warung -> ${idWarung} = ${avg}`);
+      return Promise.all([avg, update]);
+    })
+    .then((resp) => {
+      console.log(`new avg rating warung -> ${idWarung} = ${resp[0]}`);
     })
     .catch((err) => {
       console.log(err);
@@ -130,26 +133,27 @@ export const avgRatingWarung = database.ref('rating/warung/{idWarung}').onUpdate
 /**
  * Menghitung rata - rata rating makanan saat ada rating baru masuk
  */
-export const avgRatingMakanan = database.ref('rating/makanan/{idMakanan}').onUpdate((event) => {
+export const avgRatingMakanan = database.ref('rating/makanan/{idMakanan}/{uid}/rating').onUpdate((event) => {
   const { idMakanan } = event.params;
-  const deltaSnapshot = event.data;
   const initRating = -1;
   let sum = 0;
   let count = 0;
 
-
-  deltaSnapshot.forEach((childSnapshot) => {
-    const childData = childSnapshot.val();
-    if (childData.rating > initRating) {
-      sum += childData.rating;
-      count += 1;
-    }
-  });
-  const avg = sum / count;
-
-  return firebase.database().ref(`makanan/${idMakanan}`).update({ totalRating: avg })
-    .then(() => {
-      console.log(`new avg rating makanan -> ${idMakanan} = ${avg}`);
+  return firebase.database().ref(`rating/makanan/${idMakanan}`).once('value')
+    .then((deltaSnapshot) => {
+      deltaSnapshot.forEach((childSnapshot) => {
+        const childData = childSnapshot.val();
+        if (childData.rating > initRating) {
+          sum += childData.rating;
+          count += 1;
+        }
+      });
+      const avg = sum / count;
+      const update = firebase.database().ref(`makanan/${idMakanan}`).update({ totalRating: avg });
+      return Promise.all([avg, update]);
+    })
+    .then((resp) => {
+      console.log(`new avg rating makanan -> ${idMakanan} = ${resp[0]}`);
     })
     .catch((err) => {
       console.log(err);

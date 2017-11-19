@@ -9,6 +9,7 @@
     "clusters": "^0.0.4",
     "firebase-admin": "~4.2.1",
     "firebase-functions": "^0.5.9",
+    "geolib": "^2.0.24",
     "lodash": "^4.17.4",
     "mathjs": "^3.14.2"
   },

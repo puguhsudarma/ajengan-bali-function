@@ -1,5 +1,5 @@
-const clusterMaker = require('clusters');
-const math = require('mathjs');
+import clusterMaker from 'clusters';
+import math from 'mathjs';
 
 const groupRating = (k, contentItem, iterate = 200) => {
   // clustering
@@ -109,62 +109,90 @@ const linearCombination = (ratingSimilarity, groupRatingSimilarity, coefisien = 
   return similarity;
 };
 
-const weightedAverageDeviation = (ratingItem, linearSim) => {
-  const mean = math.mean(ratingItem, 0);
-  const nonColdStart = [];
-  let prediksiPembilang = 0;
-  let prediksiPenyebut = 0;
+// const weightedAverageDeviation = (ratingItem, linearSim) => {
+//   const mean = math.mean(ratingItem, 0);
+//   const nonColdStart = [];
+//   let prediksiPembilang = 0;
+//   let prediksiPenyebut = 0;
 
-  ratingItem.forEach((uVal) => {
-    const rowNonColdStart = [];
-    uVal.forEach((kVal, k) => {
-      uVal.forEach((iVal, i) => {
-        prediksiPembilang += (iVal - mean[i]) * linearSim[k][i];
-        prediksiPenyebut += math.abs(linearSim[k][i]);
-      });
-      const wad = (prediksiPenyebut !== 0) ? mean[k] + (prediksiPembilang / prediksiPenyebut) : 0;
-      prediksiPembilang = 0;
-      prediksiPenyebut = 0;
-      rowNonColdStart.push(wad);
-    });
-    nonColdStart.push(rowNonColdStart);
-  });
+//   ratingItem.forEach((uVal) => {
+//     const rowNonColdStart = [];
+//     uVal.forEach((kVal, k) => {
+//       uVal.forEach((iVal, i) => {
+//         prediksiPembilang += (iVal - mean[i]) * linearSim[k][i];
+//         prediksiPenyebut += math.abs(linearSim[k][i]);
+//       });
+//       const wad = (prediksiPenyebut !== 0) ?
+//         mean[k] + (prediksiPembilang / prediksiPenyebut) :
+//         0;
+//       prediksiPembilang = 0;
+//       prediksiPenyebut = 0;
+//       rowNonColdStart.push(wad);
+//     });
+//     nonColdStart.push(rowNonColdStart);
+//   });
 
-  return nonColdStart;
-};
+//   return nonColdStart;
+// };
 
-const weightedSum = (ratingItem, linearSim) => {
+// const weightedSum = (ratingItem, linearSim, indexUser) => {
+//   const coldStart = [];
+//   let prediksiPembilang = 0;
+//   let prediksiPenyebut = 0;
+
+//   ratingItem.forEach((uVal) => {
+//     const rowColdStart = [];
+//     uVal.forEach((kVal, k) => {
+//       uVal.forEach((iVal, i) => {
+//         prediksiPembilang += iVal * linearSim[k][i];
+//         prediksiPenyebut += math.abs(linearSim[k][i]);
+//       });
+//       const ws = (prediksiPenyebut !== 0) ? prediksiPembilang / prediksiPenyebut : 0;
+//       prediksiPembilang = 0;
+//       prediksiPenyebut = 0;
+//       rowColdStart.push(ws);
+//     });
+//     coldStart.push(rowColdStart);
+//   });
+
+//   return coldStart;
+// };
+
+const weightedSum = (ratingItem, linearSim, indexUser) => {
   const coldStart = [];
   let prediksiPembilang = 0;
   let prediksiPenyebut = 0;
 
-  ratingItem.forEach((uVal) => {
-    const rowColdStart = [];
-    uVal.forEach((kVal, k) => {
-      uVal.forEach((iVal, i) => {
-        prediksiPembilang += iVal * linearSim[k][i];
-        prediksiPenyebut += math.abs(linearSim[k][i]);
-      });
-      const ws = (prediksiPenyebut !== 0) ? prediksiPembilang / prediksiPenyebut : 0;
-      prediksiPembilang = 0;
-      prediksiPenyebut = 0;
-      rowColdStart.push(ws);
+  ratingItem[indexUser].forEach((kVal, k) => {
+    ratingItem[indexUser].forEach((iVal, i) => {
+      prediksiPembilang += iVal * linearSim[k][i];
+      prediksiPenyebut += math.abs(linearSim[k][i]);
     });
-    coldStart.push(rowColdStart);
+    const ws = (prediksiPenyebut !== 0) ? prediksiPembilang / prediksiPenyebut : 0;
+    prediksiPembilang = 0;
+    prediksiPenyebut = 0;
+    coldStart.push(ws);
   });
 
   return coldStart;
 };
 
-module.exports = (ratingItem, contentItem, config = { k: 4, iterate: 200, coefisien: 0.4 }) => {
+export default (
+  ratingItem,
+  contentItem,
+  indexUser,
+  config = { k: 4, iterate: 200, coefisien: 0.4 },
+) => {
   const lc = linearCombination(
     pearsonCorrelationBasedSimilarity(ratingItem),
     adjustCosineSimilarity(groupRating(config.k, contentItem, config.iterate)),
     config.coefisien,
   );
 
-  return {
-    nonColdStart: weightedAverageDeviation(ratingItem, lc),
-    coldStart: weightedSum(ratingItem, lc),
-  };
+  // return {
+  //   nonColdStart: weightedAverageDeviation(ratingItem, lc),
+  //   coldStart: weightedSum(ratingItem, lc),
+  // };
+
+  return weightedSum(ratingItem, lc, indexUser);
 };

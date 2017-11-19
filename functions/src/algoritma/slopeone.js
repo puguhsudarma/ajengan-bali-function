@@ -1,4 +1,4 @@
-const math = require('mathjs');
+import math from 'mathjs';
 
 const dev = (ratingItem) => {
   const items = math.transpose(ratingItem);
@@ -63,4 +63,4 @@ const p = (deviation, ratingItem) => {
   return newRatingPrediction;
 };
 
-module.exports = ratingItem => p(dev(ratingItem), ratingItem);
+export default ratingItem => p(dev(ratingItem), ratingItem);

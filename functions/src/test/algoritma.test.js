@@ -23,6 +23,4 @@ const contentItem = [
   [4082, 1.37],
 ];
 
-const hasil = algoritma(ratingItem, contentItem, 0);
-
-console.log(hasil);
+console.log(algoritma(ratingItem, contentItem, 0));

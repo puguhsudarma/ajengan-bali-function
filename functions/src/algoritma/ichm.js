@@ -1,7 +1,7 @@
 import clusterMaker from 'clusters';
 import math from 'mathjs';
 
-const groupRating = (k, contentItem, iterate = 200) => {
+const groupRating = (k, contentItem, iterate) => {
   // clustering
   clusterMaker.k(k);
   clusterMaker.iterations(iterate);
@@ -96,7 +96,7 @@ const adjustCosineSimilarity = (dataGroupRating) => {
   return similarity;
 };
 
-const linearCombination = (ratingSimilarity, groupRatingSimilarity, coefisien = 0.4) => {
+const linearCombination = (ratingSimilarity, groupRatingSimilarity, coefisien) => {
   const similarity = [];
   ratingSimilarity.forEach((row, rowIndex) => {
     const rowSimilarity = [];
@@ -177,12 +177,7 @@ const weightedSum = (ratingItem, linearSim, indexUser) => {
   return coldStart;
 };
 
-export default (
-  ratingItem,
-  contentItem,
-  indexUser,
-  config = { k: 4, iterate: 200, coefisien: 0.4 },
-) => {
+export default (ratingItem, contentItem, indexUser, config) => {
   const lc = linearCombination(
     pearsonCorrelationBasedSimilarity(ratingItem),
     adjustCosineSimilarity(groupRating(config.k, contentItem, config.iterate)),

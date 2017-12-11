@@ -1,15 +1,21 @@
 import slopeone from './slopeone';
 import ichm from './ichm';
 import saw from './saw';
+import {
+  bobotSAW,
+  configICHM,
+  flagSAW,
+  indexJarakSAW,
+} from './config';
 
 export default (
   rating,
   content,
   indexUser,
-  indexJarak = 0,
-  flag = [-1, 1],
-  bobot = [0.5, 0.5],
-  config = { k: 4, iterate: 200, coefisien: 0.4 },
+  indexJarak = indexJarakSAW,
+  flag = flagSAW,
+  bobot = bobotSAW,
+  config = configICHM,
 ) => {
   // Algoritma Slope One
   const slopeOne = slopeone(rating);

@@ -2,9 +2,6 @@ import slopeone from './slopeone';
 import ichm from './ichm';
 import saw from './saw';
 import {
-  bobotSAW,
-  configICHM,
-  flagSAW,
   indexJarakSAW,
 } from './config';
 
@@ -13,16 +10,13 @@ export default (
   content,
   indexUser,
   indexJarak = indexJarakSAW,
-  flag = flagSAW,
-  bobot = bobotSAW,
-  config = configICHM,
 ) => {
   // Algoritma Slope One
   const slopeOne = slopeone(rating);
   // console.log(slopeOne);
 
   // Algoritma ICHM
-  const ichmVal = ichm(slopeOne, content, indexUser, config);
+  const ichmVal = ichm(slopeOne, content, indexUser);
   // console.log(ichmVal);
 
   // Algoritma SAW
@@ -41,7 +35,7 @@ export default (
   content.forEach((rowVal, rowIndex) => {
     coldStart.push([rowVal[indexJarak], ichmVal[rowIndex]]);
   });
-  const sawResult = saw(coldStart, flag, bobot);
+  const sawResult = saw(coldStart);
 
   return sawResult;
 };

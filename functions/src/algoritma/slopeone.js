@@ -63,4 +63,7 @@ const p = (deviation, ratingItem) => {
   return newRatingPrediction;
 };
 
-export default ratingItem => p(dev(ratingItem), ratingItem);
+export default (ratingItem) => {
+  const deviation = dev(ratingItem);
+  return p(deviation, ratingItem);
+};

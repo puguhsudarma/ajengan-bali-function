@@ -1,12 +1,12 @@
-import clusterMaker from 'clusters';
 import math from 'mathjs';
+import clusterMaker from './clustering';
+import {
+  configICHM,
+} from './config';
 
-const groupRating = (k, contentItem, iterate) => {
+const groupRating = (contentItem) => {
   // clustering
-  clusterMaker.k(k);
-  clusterMaker.iterations(iterate);
-  clusterMaker.data(contentItem);
-  const cluster = clusterMaker.clusters();
+  const cluster = clusterMaker(contentItem);
 
   // group rating
   const matrixPro = [];
@@ -177,12 +177,11 @@ const weightedSum = (ratingItem, linearSim, indexUser) => {
   return coldStart;
 };
 
-export default (ratingItem, contentItem, indexUser, config) => {
-  const lc = linearCombination(
-    pearsonCorrelationBasedSimilarity(ratingItem),
-    adjustCosineSimilarity(groupRating(config.k, contentItem, config.iterate)),
-    config.coefisien,
-  );
+export default (ratingItem, contentItem, indexUser, config = configICHM) => {
+  const gR = groupRating(contentItem);
+  const simR = pearsonCorrelationBasedSimilarity(ratingItem);
+  const simGR = adjustCosineSimilarity(gR);
+  const lc = linearCombination(simR, simGR, config.coefisien);
 
   // return {
   //   nonColdStart: weightedAverageDeviation(ratingItem, lc),

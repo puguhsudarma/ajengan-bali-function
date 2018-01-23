@@ -7,6 +7,6 @@ export {
 } from './functions/Function.RatingInit';
 
 export {
-  rekomendasiMakanan,
+  // rekomendasiMakanan,
   rekomendasiWarung,
 } from './functions/Functions.Rekomendasi';

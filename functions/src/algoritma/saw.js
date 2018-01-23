@@ -1,4 +1,5 @@
 import math from 'mathjs';
+import { flagSAW, bobotSAW } from './config';
 
 const normalisasi = (matriks, flag) => {
   const max = math.max(matriks, 0);
@@ -29,4 +30,7 @@ const preferensi = (normalMatriks, bobot) => {
   return pref;
 };
 
-export default (matriks, flag, bobot) => preferensi(normalisasi(matriks, flag), bobot);
+export default (matriks, flag = flagSAW, bobot = bobotSAW) => {
+  const matriksNorm = normalisasi(matriks, flag);
+  return preferensi(matriksNorm, bobot);
+};
